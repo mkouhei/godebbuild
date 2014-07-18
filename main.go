@@ -23,14 +23,12 @@ const (
 )
 
 type config struct {
-	WorkDirpath     string
-	TempDirpath     string
-	UnsignedDirpath string
-	SignedDirpath   string
-	Flavor          string
-	Codename        string
-	Basetgz         string
-	Basepath        string
+	WorkDirpath    string
+	ResultsDirpath string
+	Flavor         string
+	Codename       string
+	Basetgz        string
+	Basepath       string
 }
 
 func workDirpath() string {
@@ -111,9 +109,8 @@ func (c *config) Piuparts(changesPath string, mirror string, noUpgradeTest bool)
 
 func (c config) preparePbuilderrc() string {
 	const content = `DISTRIBUTION={{.Codename}}
-BINDMOUNTS={{.TempDirpath}}
 DEBBUILDOPTS="-sa"
-BUILDRESULT={{.UnsignedDirpath}}
+BUILDRESULT={{.ResultsDirpath}}
 `
 	pbuilderrcTempl := template.Must(template.New("").Parse(content))
 	buf := &bytes.Buffer{}
@@ -150,7 +147,7 @@ func buildPkg(pbuilderrcPath string, basepath string, dscPath string) {
 
 func (c *config) gitBuildPkg() {
 	command := "sudo"
-	exportDirOpt := fmt.Sprintf("--git-exportdir=%s", c.UnsignedDirpath)
+	exportDirOpt := fmt.Sprintf("--git-exportdir=%s", c.ResultsDirpath)
 	gitDistOpt := fmt.Sprintf("--git-dist=%s", c.Codename)
 	args := []string{"git-buildpackage", "--git-ignore-branch",
 		"--git-pbuilder", exportDirOpt, "-sa", "--git-ignore-new",
@@ -160,7 +157,7 @@ func (c *config) gitBuildPkg() {
 
 func (c *config) findDscName() string {
 	var dscName string
-	fis, err := ioutil.ReadDir(c.UnsignedDirpath)
+	fis, err := ioutil.ReadDir(c.ResultsDirpath)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -296,14 +293,10 @@ func main() {
 
 	workDirpath := workDirpath()
 	cfg := &config{workDirpath,
-		path.Dir(fmt.Sprintf("%s/temp/", workDirpath)),
-		path.Dir(fmt.Sprintf("%s/unsigned_results/", workDirpath)),
-		path.Dir(fmt.Sprintf("%s/signed_results/", workDirpath)),
+		path.Dir(fmt.Sprintf("%s/results/", workDirpath)),
 		*f, *c, "", ""}
 
-	os.Mkdir(cfg.TempDirpath, dirPerm)
-	os.Mkdir(cfg.UnsignedDirpath, dirPerm)
-	os.Mkdir(cfg.SignedDirpath, dirPerm)
+	os.Mkdir(cfg.ResultsDirpath, dirPerm)
 
 	cfg.setBasepath()
 	cfg.setBasetgz()
@@ -327,13 +320,13 @@ func main() {
 	arch := Architecture()
 	changesName := ChangesName(dscName, arch)
 	cfg.updatePbuilder()
-	unsignedChangesPath := fmt.Sprintf("%s/%s", cfg.UnsignedDirpath, changesName)
-	cfg.Piuparts(unsignedChangesPath, *m, *n)
-	cfg.changeOwner(cfg.UnsignedDirpath)
-	Debsign(unsignedChangesPath, *p)
+	changesPath := fmt.Sprintf("%s/%s", cfg.ResultsDirpath, changesName)
+	cfg.Piuparts(changesPath, *m, *n)
+	cfg.changeOwner(cfg.ResultsDirpath)
+	Debsign(changesPath, *p)
 	if *b == true {
-		DputCheck(unsignedChangesPath, *w)
+		DputCheck(changesPath, *w)
 	} else {
-		cfg.Dput(unsignedChangesPath, *r, *w)
+		cfg.Dput(changesPath, *r, *w)
 	}
 }
