@@ -3,7 +3,7 @@
 
 BIN := debbuild
 SRC := *.go
-GOPKG := github.com/mkouhei/debbuild-tokyodebian115/
+GOPKG := github.com/mkouhei/godebbuild/
 GOPATH := $(CURDIR)/_build:$(GOPATH)
 export GOPATH
 
@@ -12,7 +12,6 @@ export GOPATH
 all: clean format build
 
 prebuild:
-	go get github.com/msbranco/goconfig
 	go get github.com/ThomasRooney/gexpect
 	install -d $(CURDIR)/_build/src/$(GOPKG)
 	cp -a $(CURDIR)/*.go $(CURDIR)/_build/src/$(GOPKG)
