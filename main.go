@@ -1,16 +1,15 @@
 package main
 
 import (
-	"flag"
-	"io"
-	"os"
-	//"github.com/msbranco/goconfig"
 	"bytes"
+	"flag"
 	"fmt"
 	"github.com/ThomasRooney/gexpect"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/url"
+	"os"
 	"os/exec"
 	"os/user"
 	"path"
@@ -95,10 +94,18 @@ func (c *config) updatePbuilder() {
 	runCommand(command, args...)
 }
 
-func (c *config) Piuparts(changesPath string) {
+func (c *config) Piuparts(changesPath string, mirror string, noUpgradeTest bool) {
 	command := "sudo"
 	args := []string{"piuparts", "-d", c.Codename, "-D", c.Flavor,
-		"--basetgz", c.Basetgz, changesPath}
+		"--basetgz", c.Basetgz}
+	if mirror != "" {
+		args = append(args, "-m")
+		args = append(args, mirror)
+	}
+	if noUpgradeTest == true {
+		args = append(args, "--no-upgrade-test")
+	}
+	args = append(args, changesPath)
 	runCommand(command, args...)
 }
 
@@ -207,6 +214,42 @@ func DputCheck(changesPath string, withoutLintian bool) {
 	runCommand(command, args...)
 }
 
+func (c *config) Dput(changesPath string, passphrase string, withoutLintian bool) {
+	os.Setenv("LANG", "C")
+
+	if _, err := ioutil.ReadFile(changesPath); err != nil {
+		log.Fatal(err)
+	}
+	var dputOpts string
+	if withoutLintian == true {
+		dputOpts = ""
+	} else {
+		dputOpts = "-l"
+	}
+	command := fmt.Sprintf("dput %s %s %s", dputOpts, c.Codename, changesPath)
+	child, err := gexpect.Spawn(command)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Expecting Please enter passphrase:\n")
+	child.Expect("Please enter passphrase:")
+	if err := child.SendLine(passphrase); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Expecting Please enter passphrase:\n")
+	child.Expect("Please enter passphrase:")
+	if err := child.SendLine(passphrase); err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Interacting.. \n")
+	child.Interact()
+	fmt.Printf("Done \n")
+	child.Close()
+}
+
 func Debsign(changesPath string, passphrase string) {
 	os.Setenv("LANG", "C")
 
@@ -218,8 +261,7 @@ func Debsign(changesPath string, passphrase string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(passphrase)
-	fmt.Printf("Expecting Enter passphrase \n")
+	fmt.Printf("Expecting Enter passphrase:\n")
 	child.Expect("Enter passphrase: ")
 	if err := child.SendLine(passphrase); err != nil {
 		log.Fatal(err)
@@ -240,7 +282,6 @@ func main() {
 	f := flag.String("f", "debian", "flavor")
 	m := flag.String("m", "", "mirror")
 	n := flag.Bool("n", false, "skip tesging upgrade from an existing version in the archive with piuparts")
-	// dput -ol only check and lintian
 	w := flag.Bool("w", false, "skip cheking with lintian")
 	p := flag.String("p", "", "GPG private key passphfase for debsign")
 	r := flag.String("r", "", "GPG private key passphfase for reprepro register")
@@ -252,13 +293,6 @@ func main() {
 	if subcmd[0] != "backport" && subcmd[0] != "original" {
 		log.Fatal("usage: debbuild [options] <backport|original>")
 	}
-	fmt.Printf("flavor: %v\n", *f)
-	fmt.Printf("mirror: %v\n", *m)
-	fmt.Printf("no upgrade test: %v\n", *n)
-	fmt.Printf("without lintian: %v\n", *w)
-	fmt.Printf("passphrase for debsign: %v\n", *p)
-	fmt.Printf("passphrase for reprepro: %v\n", *r)
-	fmt.Printf("build only: %v\n", *b)
 
 	workDirpath := workDirpath()
 	cfg := &config{workDirpath,
@@ -294,9 +328,12 @@ func main() {
 	changesName := ChangesName(dscName, arch)
 	cfg.updatePbuilder()
 	unsignedChangesPath := fmt.Sprintf("%s/%s", cfg.UnsignedDirpath, changesName)
-	cfg.Piuparts(unsignedChangesPath)
+	cfg.Piuparts(unsignedChangesPath, *m, *n)
 	cfg.changeOwner(cfg.UnsignedDirpath)
 	Debsign(unsignedChangesPath, *p)
-	DputCheck(unsignedChangesPath, *w)
-
+	if *b == true {
+		DputCheck(unsignedChangesPath, *w)
+	} else {
+		cfg.Dput(unsignedChangesPath, *r, *w)
+	}
 }
