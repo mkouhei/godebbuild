@@ -13,6 +13,7 @@ all: clean format build
 
 prebuild:
 	go get github.com/ThomasRooney/gexpect
+	go get github.com/miguel-branco/goconfig
 	install -d $(CURDIR)/_build/src/$(GOPKG)
 	cp -a $(CURDIR)/*.go $(CURDIR)/_build/src/$(GOPKG)
 

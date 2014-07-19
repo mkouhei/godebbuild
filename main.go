@@ -21,6 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/ThomasRooney/gexpect"
+	"github.com/miguel-branco/goconfig"
 	"io"
 	"io/ioutil"
 	"log"
@@ -311,6 +312,26 @@ func (c *config) cleanDirs() {
 	}
 }
 
+func readConfig(configPath string) map[string]string {
+	c, err := goconfig.ReadConfigFile(configPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	p, err := c.GetString("pgp", "passphrase")
+	if err != nil {
+		p = ""
+	}
+	r, err := c.GetString("reprepro", "passphrase")
+	if err != nil {
+		r = ""
+	}
+	pass := map[string]string{
+		"passphrase":  p,
+		"rPassphrase": r,
+	}
+	return pass
+}
+
 func main() {
 
 	c := flag.String("c", "sid", "codename")
@@ -323,6 +344,7 @@ func main() {
 	b := flag.Bool("b", false, "Build only without dput upload")
 	u := flag.String("u", "", ".dsc url for backport")
 	cl := flag.Bool("clean", false, "clean results and temp directories.")
+	cnf := flag.String("config", "", "configuration file of debbuild")
 	flag.Parse()
 
 	subcmd := flag.Args()
@@ -331,6 +353,17 @@ func main() {
 	}
 	if subcmd[0] != "backport" && subcmd[0] != "original" {
 		log.Fatal("usage: debbuild [options] <backport|original>")
+	}
+
+	var pass map[string]string
+	if *cnf != "" {
+		pass = readConfig(*cnf)
+	}
+	if *p != "" {
+		pass["passphrase"] = *p
+	}
+	if *r != "" {
+		pass["rPassphrase"] = *r
 	}
 
 	initDirpath := curdir()
@@ -376,10 +409,10 @@ func main() {
 	changesPath := fmt.Sprintf("%s/%s", cfg.ResultsDirpath, changesName)
 	cfg.Piuparts(changesPath, *m, *n)
 	cfg.changeOwner(cfg.ResultsDirpath)
-	Debsign(changesPath, *p)
+	Debsign(changesPath, pass["passphrase"])
 	if *b == true {
 		DputCheck(changesPath, *w)
 	} else {
-		cfg.Dput(changesPath, *r, *w)
+		cfg.Dput(changesPath, pass["rPassphrase"], *w)
 	}
 }
