@@ -175,6 +175,12 @@ func buildPkg(pbuilderrcPath string, basepath string, dscPath string) {
 	runCommand(command, args...)
 }
 
+func mkBuildDeps() {
+	command := "sudo"
+	args := []string{"mk-build-deps", "-i", "-r"}
+	runCommand(command, args...)
+}
+
 func (c *config) gitBuildPkg() {
 	command := "sudo"
 	exportDirOpt := fmt.Sprintf("--git-export-dir=%s", c.ResultsDirpath)
@@ -399,6 +405,7 @@ func main() {
 	} else if subcmd[0] == "original" {
 		// original
 		os.Chdir(initDirpath)
+		mkBuildDeps()
 		cfg.gitBuildPkg()
 		dscName = cfg.findDscName()
 	}
