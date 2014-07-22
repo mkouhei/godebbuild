@@ -12,3 +12,18 @@ This tool executes as follows;
 * Tesging to install/unstall
 * Signing with GPG Public key.
 * Uploading to local archives managed with reprepro with lintian test.
+
+Requirements
+------------
+
+Debian packages
+~~~~~~~~~~~~~~~
+
+* devscripts
+* dpkg-dev
+* pbuilder
+* cowbuilder
+* git-buildpackage
+* piuparts
+* dput
+* openssh-client
