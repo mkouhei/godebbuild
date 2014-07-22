@@ -20,8 +20,6 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"github.com/ThomasRooney/gexpect"
-	"github.com/miguel-branco/goconfig"
 	"io"
 	"io/ioutil"
 	"log"
@@ -32,6 +30,9 @@ import (
 	"path"
 	"strings"
 	"text/template"
+
+	"github.com/ThomasRooney/gexpect"
+	"github.com/miguel-branco/goconfig"
 )
 
 const (
