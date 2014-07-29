@@ -8,8 +8,14 @@ GOPATH := $(CURDIR)/_build:$(GOPATH)
 export GOPATH
 
 
-#all: clean format test build
-all: clean format build
+all: precheck clean format test build
+
+precheck:
+	@if [ -d .git ]; then \
+	set -e; \
+	diff -u .git/hooks/pre-commit utils/pre-commit.txt ;\
+	[ -x .git/hooks/pre-commit ] ;\
+	fi
 
 prebuild:
 	go get github.com/ThomasRooney/gexpect
