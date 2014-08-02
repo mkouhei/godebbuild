@@ -32,6 +32,7 @@ build-only:
 
 clean:
 	@rm -rf _build/
+	@rm -f main.test
 
 
 format:
