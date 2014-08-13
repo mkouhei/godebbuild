@@ -11,7 +11,7 @@ import (
 
 func PkgName(dscName string) string {
 	p := strings.Split(dscName, "_")
-	return p[len(p)-1]
+	return p[0]
 }
 
 func DscName(rawurl string) (string, error) {
