@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	exampleDscUrl  = "http://http.debian.net/debian/pool/main/e/example/example_0.1-1.dsc"
-	exampleDscName = "example_0.1-1.dsc"
+	exampleDscUrl      = "http://http.debian.net/debian/pool/main/e/example/example_0.1-1.dsc"
+	exampleDscName     = "example_0.1-1.dsc"
+	exampleChangesName = "example_0.1-1_amd64.changes"
 )
 
 func TestDscName(t *testing.T) {
@@ -43,4 +44,10 @@ func TestFindDscName(t *testing.T) {
 	}
 	c.TempDirpath = "temp"
 	c.cleanDirs()
+}
+
+func TestChangesName(t *testing.T) {
+	if changes := ChangesName(exampleDscName, "amd64"); changes != exampleChangesName {
+		t.Fatalf("%v, want: %s", changes, exampleChangesName)
+	}
 }
