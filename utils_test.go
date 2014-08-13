@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"path"
 	"testing"
 )
 
@@ -27,4 +28,10 @@ func TestWorkDirPath(t *testing.T) {
 	c := &config{}
 	c.TempDirpath = tmp
 	c.cleanDirs()
+}
+
+func TestCurdir(t *testing.T) {
+	if cwd := path.Base(curdir()); cwd != "godebbuild" {
+		t.Fatalf("%v, want: godebbuild", cwd)
+	}
 }
