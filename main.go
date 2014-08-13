@@ -64,6 +64,7 @@ func main() {
 
 	initDirpath := curdir()
 	workDirpath := workDirpath()
+	bldDepsPkgName := ""
 	os.Chdir(workDirpath)
 	cfg := &config{workDirpath,
 		path.Dir(fmt.Sprintf("%s/temp/", workDirpath)),
@@ -95,9 +96,10 @@ func main() {
 	} else if subcmd[0] == "original" {
 		// original
 		os.Chdir(initDirpath)
-		mkBuildDeps()
+		mkBuildDeps("debian/control")
 		cfg.gitBuildPkg()
 		dscName = cfg.findDscName()
+		bldDepsPkgName = fmt.Sprintf("%s-build-deps", PkgName(dscName))
 	}
 
 	arch := Architecture()
@@ -111,5 +113,8 @@ func main() {
 		DputCheck(changesPath, *w)
 	} else {
 		cfg.Dput(changesPath, pass["rPassphrase"], *w)
+	}
+	if bldDepsPkgName != "" {
+		purgeBuildDeps(bldDepsPkgName)
 	}
 }

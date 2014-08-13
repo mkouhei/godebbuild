@@ -59,9 +59,16 @@ func buildPkg(pbuilderrcPath string, basepath string, dscPath string) {
 	runCommand(command, args...)
 }
 
-func mkBuildDeps() {
+func mkBuildDeps(controlFilePath string) {
 	command := "sudo"
-	args := []string{"mk-build-deps", "-i", "-r"}
+	args := []string{"mk-build-deps", "-i", "-r", controlFilePath, "-t",
+		"'apt-get --force-yes -y'"}
+	runCommand(command, args...)
+}
+
+func purgeBuildDeps(bldDepsPkgName string) {
+	command := "sudo"
+	args := []string{"apt-get", "purge", "-y", bldDepsPkgName}
 	runCommand(command, args...)
 }
 

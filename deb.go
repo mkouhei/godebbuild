@@ -9,6 +9,11 @@ import (
 	"strings"
 )
 
+func PkgName(dscName string) string {
+	p := strings.Split(dscName, "_")
+	return p[len(p)-1]
+}
+
 func DscName(rawurl string) string {
 	dscUrl, err := url.Parse(rawurl)
 	if err != nil {
