@@ -35,8 +35,8 @@ func TestFindDscName(t *testing.T) {
 	c := &config{}
 	c.ResultsDirpath = "temp"
 	os.Mkdir(c.ResultsDirpath, dirPerm)
-	if dscName, err := c.findDscName(); dscName == "" || err != nil {
-		fmt.Printf("OK: %v, want: %s\n", err, exampleDscName)
+	if dscName, err := c.findDscName(); dscName != "" || err == nil {
+		t.Fatalf("%v, want: %s", dscName, "<empty>")
 	}
 	ioutil.WriteFile(fmt.Sprintf("temp/%s", exampleDscName), []byte(""), filePerm)
 	if dscName, err := c.findDscName(); dscName == "" || err != nil {
