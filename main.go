@@ -86,9 +86,13 @@ func main() {
 	pbuilderrcPath := cfg.preparePbuilderrc()
 
 	var dscName string
+	var err error
 	if subcmd[0] == "backport" {
 		// backport
-		dscName = DscName(*u)
+		dscName, err = DscName(*u)
+		if err != nil {
+			log.Fatal(err)
+		}
 		dscPath := fmt.Sprintf("%s/%s", cfg.TempDirpath, dscName)
 		cfg.retrieveSrcPkg(*u)
 		buildPkg(pbuilderrcPath, cfg.Basepath, dscPath)
@@ -98,7 +102,7 @@ func main() {
 		os.Chdir(initDirpath)
 		mkBuildDeps("debian/control")
 		cfg.gitBuildPkg()
-		dscName = cfg.findDscName()
+		dscName := cfg.findDscName()
 		bldDepsPkgName = fmt.Sprintf("%s-build-deps", PkgName(dscName))
 	}
 

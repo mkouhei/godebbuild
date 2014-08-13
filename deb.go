@@ -14,14 +14,14 @@ func PkgName(dscName string) string {
 	return p[len(p)-1]
 }
 
-func DscName(rawurl string) string {
+func DscName(rawurl string) (string, error) {
 	dscUrl, err := url.Parse(rawurl)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 	var p []string
 	p = strings.Split(dscUrl.Path, "/")
-	return p[len(p)-1]
+	return p[len(p)-1], nil
 }
 
 func (c *config) findDscName() string {
