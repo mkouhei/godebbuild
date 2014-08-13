@@ -30,6 +30,13 @@ const (
 )
 
 func main() {
+
+	var (
+		dscName string
+		pass    map[string]string
+		err     error
+	)
+
 	c := flag.String("c", "sid", "codename")
 	f := flag.String("f", "debian", "flavor")
 	m := flag.String("m", "", "mirror")
@@ -51,7 +58,6 @@ func main() {
 		log.Fatal("usage: debbuild [options] <backport|original>")
 	}
 
-	var pass map[string]string
 	if *cnf != "" {
 		pass = readConfig(*cnf)
 	}
@@ -63,10 +69,13 @@ func main() {
 	}
 
 	initDirpath := curdir()
-	workDirpath := workDirpath()
+	wd, err := workDirpath()
+	if err != nil {
+		log.Fatal(err)
+	}
 	bldDepsPkgName := ""
-	os.Chdir(workDirpath)
-	cfg := &config{workDirpath,
+	os.Chdir(wd)
+	cfg := &config{wd,
 		path.Dir(fmt.Sprintf("%s/temp/", workDirpath)),
 		path.Dir(fmt.Sprintf("%s/results/", workDirpath)),
 		*f, *c, "", ""}
@@ -85,8 +94,6 @@ func main() {
 
 	pbuilderrcPath := cfg.preparePbuilderrc()
 
-	var dscName string
-	var err error
 	if subcmd[0] == "backport" {
 		// backport
 		dscName, err = DscName(*u)

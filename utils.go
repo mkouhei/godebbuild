@@ -30,15 +30,15 @@ func (c *config) changeOwner(dirPath string) {
 	runCommand(command, args...)
 }
 
-func workDirpath() string {
-	workDirpath := os.Getenv("WORKSPACE")
-	if workDirpath == "" {
-		log.Fatal("Not set WORKSPACE environment variable")
+func workDirpath() (string, error) {
+	wd := os.Getenv("WORKSPACE")
+	if wd == "" {
+		return "", Error("Not set WORKSPACE environment variable")
 	}
-	if _, err := ioutil.ReadDir(workDirpath); err != nil {
-		log.Fatal(err)
+	if _, err := ioutil.ReadDir(wd); err != nil {
+		return "", err
 	}
-	return workDirpath
+	return wd, nil
 }
 
 func curdir() string {

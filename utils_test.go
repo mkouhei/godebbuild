@@ -6,17 +6,25 @@ import (
 )
 
 func TestWorkDirPath(t *testing.T) {
-	os.Setenv("WORKSPACE", "/tmp/foo")
-	os.Mkdir("/tmp/foo", 0600)
-	os.Mkdir("/tmp/bar", 0600)
-	wd := workDirpath()
-	if wd != "/tmp/foo" {
-		t.Fatal(wd)
+	var (
+		wd  string
+		err error
+		tmp = "temp"
+	)
+
+	if wd, err = workDirpath(); wd != "" || err == nil {
+		t.Fatalf("%v, want: %s", wd, "<empty>")
+	}
+	os.Setenv("WORKSPACE", tmp)
+	os.Mkdir(tmp, 0600)
+	if wd, err = workDirpath(); err != nil {
+		t.Fatalf("%v, want: %s", err, "")
+	}
+	if wd != tmp {
+		t.Fatalf("%v, want: %s", wd, tmp)
 	}
 
 	c := &config{}
-	c.TempDirpath = "/tmp/foo"
-	c.ResultsDirpath = "/tmp/bar"
-
+	c.TempDirpath = tmp
 	c.cleanDirs()
 }
