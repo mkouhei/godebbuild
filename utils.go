@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -69,4 +70,8 @@ func runCommand(command string, args ...string) {
 	if err == io.EOF {
 		err = nil
 	}
+}
+
+func Error(err string) error {
+	return errors.New(err)
 }

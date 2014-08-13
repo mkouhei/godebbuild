@@ -24,14 +24,15 @@ func DscName(rawurl string) (string, error) {
 	return p[len(p)-1], nil
 }
 
-func (c *config) findDscName() string {
+func (c *config) findDscName() (string, error) {
 	var dscName string
 	fis, err := ioutil.ReadDir(c.ResultsDirpath)
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 	if len(fis) == 0 {
-		log.Fatal(err)
+		err = Error("Not found \".dsc\" file")
+		return "", err
 	}
 	for _, fi := range fis {
 		if strings.HasSuffix(fi.Name(), ".dsc") == true {
@@ -39,7 +40,7 @@ func (c *config) findDscName() string {
 			break
 		}
 	}
-	return dscName
+	return dscName, nil
 }
 
 func Architecture() string {

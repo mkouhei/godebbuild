@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -25,4 +28,19 @@ func TestArchitecure(t *testing.T) {
 	if arch := Architecture(); arch != "amd64" {
 		t.Fatalf("%v, want: amd64", arch)
 	}
+}
+
+func TestFindDscName(t *testing.T) {
+	c := &config{}
+	c.ResultsDirpath = "temp"
+	os.Mkdir(c.ResultsDirpath, dirPerm)
+	if dscName, err := c.findDscName(); dscName == "" || err != nil {
+		fmt.Printf("OK: %v, want: %s\n", err, exampleDscName)
+	}
+	ioutil.WriteFile(fmt.Sprintf("temp/%s", exampleDscName), []byte(""), filePerm)
+	if dscName, err := c.findDscName(); dscName == "" || err != nil {
+		t.Fatalf("%v, want: %s\n", err, exampleDscName)
+	}
+	c.TempDirpath = "temp"
+	c.cleanDirs()
 }

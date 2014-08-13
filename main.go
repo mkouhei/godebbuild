@@ -102,7 +102,9 @@ func main() {
 		os.Chdir(initDirpath)
 		mkBuildDeps("debian/control")
 		cfg.gitBuildPkg()
-		dscName := cfg.findDscName()
+		if dscName, err = cfg.findDscName(); err != nil {
+			log.Fatal(err)
+		}
 		bldDepsPkgName = fmt.Sprintf("%s-build-deps", PkgName(dscName))
 	}
 
