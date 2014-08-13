@@ -20,3 +20,9 @@ func TestPkgName(t *testing.T) {
 		t.Fatal("%v, want: example", pkgName)
 	}
 }
+
+func TestArchitecure(t *testing.T) {
+	if arch := Architecture(); arch != "amd64" {
+		t.Fatalf("%v, want: amd64", arch)
+	}
+}
