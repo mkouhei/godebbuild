@@ -47,3 +47,9 @@ func TestRunCommand(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestError(t *testing.T) {
+	if err := Error("test"); err == nil {
+		t.Fatal("want: <fail>")
+	}
+}
