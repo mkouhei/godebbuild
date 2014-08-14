@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"testing"
 )
 
@@ -37,4 +38,18 @@ func TestSetBasetgz(t *testing.T) {
 	if c.Basetgz != basetgzJessie {
 		t.Fatalf("%v, want: %s", c.Basetgz, basetgzJessie)
 	}
+}
+
+func TestPreparePbuilderrc(t *testing.T) {
+	c := &config{}
+	c.TempDirpath = "temp"
+	c.WorkDirpath = "temp"
+	c.Codename = "sid"
+	c.ResultsDirpath = "temp"
+
+	os.Mkdir(c.WorkDirpath, dirPerm)
+	if p := c.preparePbuilderrc(); p != "temp/.pbuilderrc" {
+		t.Fatalf("%v, want: temp/.pbuilderrc", p)
+	}
+	c.cleanDirs()
 }
