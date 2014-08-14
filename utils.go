@@ -50,14 +50,14 @@ func curdir() string {
 	return cwd
 }
 
-func runCommand(command string, args ...string) {
+func runCommand(command string, args ...string) error {
 	cmd := exec.Command(command, args...)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	if err := cmd.Start(); err != nil {
-		log.Fatal(err)
+		return err
 	}
 	buf := make([]byte, 1024)
 	var n int
@@ -70,6 +70,7 @@ func runCommand(command string, args ...string) {
 	if err == io.EOF {
 		err = nil
 	}
+	return nil
 }
 
 func Error(err string) error {

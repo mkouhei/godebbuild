@@ -35,3 +35,15 @@ func TestCurdir(t *testing.T) {
 		t.Fatalf("%v, want: godebbuild", cwd)
 	}
 }
+
+func TestRunCommand(t *testing.T) {
+	cmd := "foo"
+	args := []string{}
+	if err := runCommand(cmd, args...); err == nil {
+		t.Fatal("Expected fail")
+	}
+	cmd = "true"
+	if err := runCommand(cmd, args...); err != nil {
+		t.Fatal(err)
+	}
+}
