@@ -5,11 +5,11 @@ import (
 	"os"
 )
 
-func (c *config) retrieveSrcPkg(dscUrl string) {
+func (c *config) retrieveSrcPkg(dscUrl string) error {
 	if err := os.Chdir(c.TempDirpath); err != nil {
 		log.Fatal(err)
 	}
 	command := "dget"
 	args := []string{"-d", dscUrl}
-	runCommand(command, args...)
+	return runCommand(command, args...)
 }
