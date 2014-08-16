@@ -31,7 +31,7 @@ build-only:
 	go build -o _build/$(BIN)
 
 clean:
-	@rm -rf _build/
+	@rm -f _build/$(BIN)
 	@rm -f main.test
 
 
