@@ -18,8 +18,7 @@ precheck:
 	fi
 
 prebuild:
-	go get github.com/ThomasRooney/gexpect
-	go get github.com/miguel-branco/goconfig
+	go get -d -v ./...
 	install -d $(CURDIR)/_build/src/$(GOPKG)
 	cp -a $(CURDIR)/*.go $(CURDIR)/_build/src/$(GOPKG)
 
