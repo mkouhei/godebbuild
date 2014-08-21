@@ -8,7 +8,7 @@ GOPATH := $(CURDIR)/_build:$(GOPATH)
 export GOPATH
 
 
-all: precheck clean format test build
+all: precheck clean test format build
 
 precheck:
 	@if [ -d .git ]; then \
