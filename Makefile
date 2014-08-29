@@ -20,7 +20,7 @@ precheck:
 prebuild:
 	go get -d -v ./...
 	install -d $(CURDIR)/_build/src/$(GOPKG)
-	cp -a $(CURDIR)/*.go $(CURDIR)/_build/src/$(GOPKG)
+	cp -a $(CURDIR)/*.go $(CURDIR)/examples $(CURDIR)/_build/src/$(GOPKG)
 
 
 build: prebuild
@@ -42,4 +42,7 @@ format:
 
 
 test: prebuild
-	go test -v -cover
+	go test -v -coverprofile=c.out $(GOPKG)
+	go tool cover -func=c.out
+	unlink c.out
+
