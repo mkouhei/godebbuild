@@ -24,10 +24,10 @@ prebuild:
 
 
 build: prebuild
-	go build -o _build/$(BIN)
+	go build -ldflags "-X main.version $(shell git describe --always)" -o _build/$(BIN)
 
 build-only:
-	go build -o _build/$(BIN)
+	go build -ldflags "-X main.version $(shell git describe --always)" -o _build/$(BIN)
 
 clean:
 	@rm -f _build/$(BIN)

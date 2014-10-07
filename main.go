@@ -29,6 +29,9 @@ const (
 	filePerm = 0644
 )
 
+var version string
+var show_version = flag.Bool("version", false, "show_version")
+
 func main() {
 
 	var (
@@ -49,6 +52,10 @@ func main() {
 	cl := flag.Bool("clean", false, "clean results and temp directories.")
 	cnf := flag.String("config", "", "configuration file of debbuild")
 	flag.Parse()
+	if *show_version {
+		fmt.Printf("version: %s\n", version)
+		return
+	}
 
 	subcmd := flag.Args()
 	if len(subcmd) == 0 {
