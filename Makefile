@@ -4,8 +4,10 @@
 BIN := debbuild
 SRC := *.go
 GOPKG := github.com/mkouhei/godebbuild/
-GOPATH := $(CURDIR)/_build:$(GOPATH)
+GOPATH := $(CURDIR)/_build
 export GOPATH
+PATH := $(CURDIR)/_build/bin:$(PATH)
+export PATH
 
 
 all: precheck clean test format build
@@ -34,15 +36,15 @@ clean:
 
 format:
 	for src in $(SRC); do \
-		gofmt $$src > $$src.tmp ;\
-		goimports $$src.tmp > $$src.tmp2 ;\
-		mv -f $$src.tmp2 $$src ;\
-		rm -f $$src.tmp ;\
+		gofmt -w $$src ;\
+		goimports -w $$src ;\
 	done
 
 
 test: prebuild
+	go get github.com/golang/lint/golint
+	golint
+	go vet
 	go test -v -coverprofile=c.out $(GOPKG)
 	go tool cover -func=c.out
 	unlink c.out
-
