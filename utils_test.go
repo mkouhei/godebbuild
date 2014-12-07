@@ -48,8 +48,8 @@ func TestRunCommand(t *testing.T) {
 	}
 }
 
-func TestError(t *testing.T) {
-	if err := Error("test"); err == nil {
+func TestDebError(t *testing.T) {
+	if err := debError("test"); err == nil {
 		t.Fatal("want: <fail>")
 	}
 }

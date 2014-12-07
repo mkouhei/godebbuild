@@ -33,7 +33,7 @@ func (c *config) changeOwner(dirPath string) {
 func workDirpath() (string, error) {
 	wd := os.Getenv("WORKSPACE")
 	if wd == "" {
-		return "", Error("Not set WORKSPACE environment variable")
+		return "", debError("Not set WORKSPACE environment variable")
 	}
 	if _, err := ioutil.ReadDir(wd); err != nil {
 		return "", err
@@ -73,6 +73,6 @@ func runCommand(command string, args ...string) error {
 	return nil
 }
 
-func Error(err string) error {
+func debError(err string) error {
 	return errors.New(err)
 }

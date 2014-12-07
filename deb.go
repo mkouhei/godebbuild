@@ -9,18 +9,18 @@ import (
 	"strings"
 )
 
-func PkgName(dscName string) string {
+func pkgName(dscName string) string {
 	p := strings.Split(dscName, "_")
 	return p[0]
 }
 
-func DscName(rawurl string) (string, error) {
-	dscUrl, err := url.Parse(rawurl)
+func dscName(rawurl string) (string, error) {
+	dscURL, err := url.Parse(rawurl)
 	if err != nil {
 		return "", err
 	}
 	var p []string
-	p = strings.Split(dscUrl.Path, "/")
+	p = strings.Split(dscURL.Path, "/")
 	return p[len(p)-1], nil
 }
 
@@ -31,7 +31,7 @@ func (c *config) findDscName() (string, error) {
 		return "", err
 	}
 	if len(fis) == 0 {
-		err = Error("Not found \".dsc\" file")
+		err = debError("Not found \".dsc\" file")
 		return "", err
 	}
 	for _, fi := range fis {
@@ -43,7 +43,7 @@ func (c *config) findDscName() (string, error) {
 	return dscName, nil
 }
 
-func Architecture() string {
+func architecture() string {
 	cmd := exec.Command("dpkg-architecture", "-qDEB_BUILD_ARCH")
 	out, err := cmd.Output()
 	if err != nil {
@@ -52,7 +52,7 @@ func Architecture() string {
 	return strings.TrimRight(string(out), "\n")
 }
 
-func ChangesName(dscName string, arch string) string {
+func changesName(dscName string, arch string) string {
 	pkgName := strings.Split(dscName, ".dsc")[0]
 	return fmt.Sprintf("%s_%s.changes", pkgName, arch)
 }

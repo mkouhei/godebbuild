@@ -30,14 +30,14 @@ const (
 )
 
 var version string
-var show_version = flag.Bool("version", false, "show_version")
+var showVersion = flag.Bool("version", false, "show_version")
 
 func main() {
 
 	var (
-		dscName string
-		pass    map[string]string
-		err     error
+		dsc  string
+		pass map[string]string
+		err  error
 	)
 
 	c := flag.String("c", "sid", "codename")
@@ -52,7 +52,7 @@ func main() {
 	cl := flag.Bool("clean", false, "clean results and temp directories.")
 	cnf := flag.String("config", "", "configuration file of debbuild")
 	flag.Parse()
-	if *show_version {
+	if *showVersion {
 		fmt.Printf("version: %s\n", version)
 		return
 	}
@@ -83,8 +83,8 @@ func main() {
 	bldDepsPkgName := ""
 	os.Chdir(wd)
 	cfg := &config{wd,
-		path.Dir(fmt.Sprintf("%s/temp/", workDirpath)),
-		path.Dir(fmt.Sprintf("%s/results/", workDirpath)),
+		path.Dir(fmt.Sprintf("%s/temp/", wd)),
+		path.Dir(fmt.Sprintf("%s/results/", wd)),
 		*f, *c, "", ""}
 
 	if *cl == true {
@@ -103,11 +103,11 @@ func main() {
 
 	if subcmd[0] == "backport" {
 		// backport
-		dscName, err = DscName(*u)
+		dsc, err = dscName(*u)
 		if err != nil {
 			log.Fatal(err)
 		}
-		dscPath := fmt.Sprintf("%s/%s", cfg.TempDirpath, dscName)
+		dscPath := fmt.Sprintf("%s/%s", cfg.TempDirpath, dsc)
 		cfg.retrieveSrcPkg(*u)
 		buildPkg(pbuilderrcPath, cfg.Basepath, dscPath)
 
@@ -116,23 +116,23 @@ func main() {
 		os.Chdir(initDirpath)
 		mkBuildDeps("debian/control")
 		cfg.gitBuildPkg()
-		if dscName, err = cfg.findDscName(); err != nil {
+		if dsc, err = cfg.findDscName(); err != nil {
 			log.Fatal(err)
 		}
-		bldDepsPkgName = fmt.Sprintf("%s-build-deps", PkgName(dscName))
+		bldDepsPkgName = fmt.Sprintf("%s-build-deps", pkgName(dsc))
 	}
 
-	arch := Architecture()
-	changesName := ChangesName(dscName, arch)
+	arch := architecture()
+	changesName := changesName(dsc, arch)
 	cfg.updatePbuilder()
 	changesPath := fmt.Sprintf("%s/%s", cfg.ResultsDirpath, changesName)
-	cfg.Piuparts(changesPath, *m, *n)
+	cfg.piuparts(changesPath, *m, *n)
 	cfg.changeOwner(cfg.ResultsDirpath)
-	Debsign(changesPath, pass["passphrase"])
+	debsign(changesPath, pass["passphrase"])
 	if *b == true {
-		DputCheck(changesPath, *w)
+		dputCheck(changesPath, *w)
 	} else {
-		cfg.Dput(changesPath, pass["rPassphrase"], *w)
+		cfg.dput(changesPath, pass["rPassphrase"], *w)
 	}
 	if bldDepsPkgName != "" {
 		purgeBuildDeps(bldDepsPkgName)

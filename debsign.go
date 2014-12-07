@@ -9,7 +9,7 @@ import (
 	"github.com/ThomasRooney/gexpect"
 )
 
-func Debsign(changesPath string, passphrase string) {
+func debsign(changesPath string, passphrase string) {
 	os.Setenv("LANG", "C")
 
 	if _, err := ioutil.ReadFile(changesPath); err != nil {

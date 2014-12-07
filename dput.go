@@ -9,7 +9,7 @@ import (
 	"github.com/ThomasRooney/gexpect"
 )
 
-func DputCheck(changesPath string, withoutLintian bool) {
+func dputCheck(changesPath string, withoutLintian bool) {
 	command := "dput"
 	var dputOpts string
 	if withoutLintian == true {
@@ -23,7 +23,7 @@ func DputCheck(changesPath string, withoutLintian bool) {
 	runCommand(command, args...)
 }
 
-func (c *config) Dput(changesPath string, passphrase string, withoutLintian bool) {
+func (c *config) dput(changesPath string, passphrase string, withoutLintian bool) {
 	os.Setenv("LANG", "C")
 
 	if _, err := ioutil.ReadFile(changesPath); err != nil {

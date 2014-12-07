@@ -1,6 +1,6 @@
 package main
 
-func (c *config) Piuparts(changesPath string, mirror string, noUpgradeTest bool) {
+func (c *config) piuparts(changesPath string, mirror string, noUpgradeTest bool) {
 	command := "sudo"
 	args := []string{"piuparts", "-d", c.Codename, "-D", c.Flavor,
 		"--basetgz", c.Basetgz}
