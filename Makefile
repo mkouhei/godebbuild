@@ -36,7 +36,7 @@ build-only:
 	go build -ldflags "-X main.version $(shell git describe --always)" -o _build/$(BIN)
 
 clean:
-	@rm -f _build/$(BIN)
+	@rm -rf _build/$(BIN) $(GOPATH)/src/$(GOPKG)
 
 format:
 	for src in $(SRC); do \
