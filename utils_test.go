@@ -79,3 +79,10 @@ func TestDebError(t *testing.T) {
 		t.Fatal("want: <fail>")
 	}
 }
+
+func TestChangeOwner(t *testing.T) {
+	rnr = testRunner{}
+	c := config{}
+	c.ResultsDirpath = "/path/to/test"
+	c.changeOwner()
+}
