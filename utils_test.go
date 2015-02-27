@@ -56,8 +56,8 @@ func TestWorkDirPath(t *testing.T) {
 }
 
 func TestCurdir(t *testing.T) {
-	if cwd := path.Base(curdir()); cwd != "godebbuild" {
-		t.Fatalf("%v, want: godebbuild", cwd)
+	if cwd := path.Base(curdir()); cwd != "temp" {
+		t.Fatalf("%v, want: temp", cwd)
 	}
 }
 
