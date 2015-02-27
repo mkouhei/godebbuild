@@ -12,5 +12,5 @@ func (c *config) piuparts(changesPath string, mirror string, noUpgradeTest bool)
 		args = append(args, "--no-upgrade-test")
 	}
 	args = append(args, changesPath)
-	runCommand(command, args...)
+	rnr.runCommand(command, args...)
 }

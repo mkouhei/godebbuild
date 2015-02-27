@@ -28,13 +28,13 @@ func (c *config) setBasetgz() {
 func (c *config) updateCowbuilder() {
 	command := "sudo"
 	args := []string{"cowbuilder", "--update", "--basepath", c.Basepath}
-	runCommand(command, args...)
+	rnr.runCommand(command, args...)
 }
 
 func (c *config) updatePbuilder() {
 	command := "sudo"
 	args := []string{"pbuilder", "--update", "--basetgz", c.Basetgz}
-	runCommand(command, args...)
+	rnr.runCommand(command, args...)
 }
 
 func (c config) preparePbuilderrc() string {
@@ -56,20 +56,20 @@ func buildPkg(pbuilderrcPath string, basepath string, dscPath string) {
 	command := "sudo"
 	args := []string{"cowbuilder", "--build", "--configfile",
 		pbuilderrcPath, "--basepath", basepath, dscPath}
-	runCommand(command, args...)
+	rnr.runCommand(command, args...)
 }
 
 func mkBuildDeps(controlFilePath string) {
 	command := "sudo"
 	args := []string{"mk-build-deps", "-i", "-r", controlFilePath, "-t",
 		"'apt-get --force-yes -y'"}
-	runCommand(command, args...)
+	rnr.runCommand(command, args...)
 }
 
 func purgeBuildDeps(bldDepsPkgName string) {
 	command := "sudo"
 	args := []string{"apt-get", "purge", "-y", bldDepsPkgName}
-	runCommand(command, args...)
+	rnr.runCommand(command, args...)
 }
 
 func (c *config) gitBuildPkg() {
@@ -79,5 +79,5 @@ func (c *config) gitBuildPkg() {
 	args := []string{"git-buildpackage", "--git-ignore-branch",
 		"--git-pbuilder", exportDirOpt, "-sa", "--git-ignore-new",
 		gitDistOpt}
-	runCommand(command, args...)
+	rnr.runCommand(command, args...)
 }

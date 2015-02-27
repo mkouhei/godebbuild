@@ -1,10 +1,35 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"os/exec"
 	"path"
 	"testing"
 )
+
+type testRunner struct{}
+
+func (r testRunner) runCommand(command string, args ...string) error {
+	cs := []string{"-test.run=TestHelperProcess", "--"}
+	cs = append(cs, args...)
+	cmd := exec.Command(os.Args[0], cs...)
+	cmd.Env = []string{"GO_WANT_HELPER_PROCESS=1"}
+	stdout, err := cmd.CombinedOutput()
+	if err != nil {
+		return err
+	}
+	fmt.Print(string(stdout))
+	return nil
+}
+
+func TestHelperProcess(*testing.T) {
+	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
+		return
+	}
+	defer os.Exit(0)
+	fmt.Println("testing helper process")
+}
 
 func TestWorkDirPath(t *testing.T) {
 	var (
@@ -37,13 +62,14 @@ func TestCurdir(t *testing.T) {
 }
 
 func TestRunCommand(t *testing.T) {
+	rnr = realRunner{}
 	cmd := "foo"
 	args := []string{}
-	if err := runCommand(cmd, args...); err == nil {
+	if err := rnr.runCommand(cmd, args...); err == nil {
 		t.Fatal("want: <fail>")
 	}
 	cmd = "true"
-	if err := runCommand(cmd, args...); err != nil {
+	if err := rnr.runCommand(cmd, args...); err != nil {
 		t.Fatal(err)
 	}
 }

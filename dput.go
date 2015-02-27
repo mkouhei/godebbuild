@@ -20,7 +20,7 @@ func dputCheck(changesPath string, withoutLintian bool) {
 		dputOpts = "-ol"
 	}
 	args := []string{dputOpts, changesPath}
-	runCommand(command, args...)
+	rnr.runCommand(command, args...)
 }
 
 func (c *config) dput(changesPath string, passphrase string, withoutLintian bool) {

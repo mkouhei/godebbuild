@@ -31,6 +31,7 @@ const (
 
 var version string
 var showVersion = flag.Bool("version", false, "show_version")
+var rnr runner
 
 func main() {
 
@@ -56,6 +57,7 @@ func main() {
 		fmt.Printf("version: %s\n", version)
 		return
 	}
+	rnr = realRunner{}
 
 	subcmd := flag.Args()
 	if len(subcmd) == 0 {
