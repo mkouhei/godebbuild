@@ -20,14 +20,14 @@ func (c *config) cleanDirs() {
 	}
 }
 
-func (c *config) changeOwner(dirPath string) {
+func (c *config) changeOwner() {
 	u, err := user.Current()
 	if err != nil {
 		log.Fatal(err)
 	}
 	command := "sudo"
-	args := []string{"chown", "-R", fmt.Sprintf("%s:", u.Username), dirPath}
 	runCommand(command, args...)
+	args := []string{"chown", "-R", fmt.Sprintf("%s:", u.Username), c.ResultsDirpath}
 }
 
 func workDirpath() (string, error) {

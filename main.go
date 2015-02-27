@@ -127,7 +127,7 @@ func main() {
 	cfg.updatePbuilder()
 	changesPath := fmt.Sprintf("%s/%s", cfg.ResultsDirpath, changesName)
 	cfg.piuparts(changesPath, *m, *n)
-	cfg.changeOwner(cfg.ResultsDirpath)
+	cfg.changeOwner()
 	debsign(changesPath, pass["passphrase"])
 	if *b == true {
 		dputCheck(changesPath, *w)
