@@ -12,6 +12,39 @@ var (
 	basetgzJessie  = "/var/cache/pbuilder/base-jessie.tgz"
 )
 
+func TestUpdateCowbuilder(t *testing.T) {
+	c := config{}
+	rnr = testRunner{}
+	c.updateCowbuilder()
+}
+
+func TestUpdatePbuilder(t *testing.T) {
+	c := config{}
+	rnr = testRunner{}
+	c.updatePbuilder()
+}
+
+func TestBuildPkg(t *testing.T) {
+	rnr = testRunner{}
+	buildPkg("/path/to/pbuilderrc", "/path/to/base.cow", "/path/to/some.dsc")
+}
+
+func TestMkBuildDeps(t *testing.T) {
+	rnr = testRunner{}
+	mkBuildDeps("/path/to/control")
+}
+
+func TestPurgeBuildDeps(t *testing.T) {
+	rnr = testRunner{}
+	purgeBuildDeps("somepkg")
+}
+
+func TestGitBuildPkg(t *testing.T) {
+	c := config{}
+	rnr = testRunner{}
+	c.gitBuildPkg()
+}
+
 func TestSetBasepath(t *testing.T) {
 	c := config{}
 	c.Codename = "sid"
