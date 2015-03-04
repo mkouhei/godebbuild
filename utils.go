@@ -1,9 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -18,23 +18,13 @@ type realRunner struct{}
 
 func (r realRunner) runCommand(command string, args ...string) error {
 	cmd := exec.Command(command, args...)
-	stdout, err := cmd.StdoutPipe()
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	err := cmd.Run()
 	if err != nil {
 		return err
-	}
-	if err := cmd.Start(); err != nil {
-		return err
-	}
-	buf := make([]byte, 1024)
-	var n int
-	for {
-		if n, err = stdout.Read(buf); err != nil {
-			break
-		}
-		fmt.Print(string(buf[0:n]))
-	}
-	if err == io.EOF {
-		err = nil
 	}
 	return nil
 }
