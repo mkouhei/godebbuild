@@ -1,6 +1,10 @@
 package main
 
-func (c *config) piuparts(changesPath string, mirror string, noUpgradeTest bool) {
+import (
+	"log"
+)
+
+func (c *config) piuparts(changesPath string, mirror string, noUpgradeTest bool) error {
 	command := "sudo"
 	args := []string{"piuparts", "-d", c.Codename, "-D", c.Flavor,
 		"--basetgz", c.Basetgz}
@@ -12,5 +16,9 @@ func (c *config) piuparts(changesPath string, mirror string, noUpgradeTest bool)
 		args = append(args, "--no-upgrade-test")
 	}
 	args = append(args, changesPath)
-	rnr.runCommand(command, args...)
+	if msg, err := rnr.runCommand(command, args...); err != nil {
+		log.Println(msg)
+		return err
+	}
+	return nil
 }

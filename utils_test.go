@@ -10,17 +10,16 @@ import (
 
 type testRunner struct{}
 
-func (r testRunner) runCommand(command string, args ...string) error {
+func (r testRunner) runCommand(command string, args ...string) (string, error) {
 	cs := []string{"-test.run=TestHelperProcess", "--"}
 	cs = append(cs, args...)
 	cmd := exec.Command(os.Args[0], cs...)
 	cmd.Env = []string{"GO_WANT_HELPER_PROCESS=1"}
 	stdout, err := cmd.CombinedOutput()
 	if err != nil {
-		return err
+		return string(stdout), err
 	}
-	fmt.Print(string(stdout))
-	return nil
+	return string(stdout), nil
 }
 
 func TestHelperProcess(*testing.T) {
@@ -65,12 +64,12 @@ func TestRunCommand(t *testing.T) {
 	rnr = realRunner{}
 	cmd := "foo"
 	args := []string{}
-	if err := rnr.runCommand(cmd, args...); err == nil {
-		t.Fatal("want: <fail>")
+	if msg, err := rnr.runCommand(cmd, args...); err == nil {
+		t.Fatalf("want: <fail>: %s", msg)
 	}
 	cmd = "true"
-	if err := rnr.runCommand(cmd, args...); err != nil {
-		t.Fatal(err)
+	if msg, err := rnr.runCommand(cmd, args...); err != nil {
+		t.Fatalf("want: <fail>: %s", msg)
 	}
 }
 

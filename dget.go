@@ -11,5 +11,9 @@ func (c *config) retrieveSrcPkg(dscURL string) error {
 	}
 	command := "dget"
 	args := []string{"-d", dscURL}
-	return rnr.runCommand(command, args...)
+	if msg, err := rnr.runCommand(command, args...); err != nil {
+		log.Println(msg)
+		return err
+	}
+	return nil
 }

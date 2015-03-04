@@ -9,7 +9,7 @@ import (
 	"github.com/ThomasRooney/gexpect"
 )
 
-func dputCheck(changesPath string, withoutLintian bool) {
+func dputCheck(changesPath string, withoutLintian bool) error {
 	command := "dput"
 	var dputOpts string
 	if withoutLintian == true {
@@ -20,7 +20,11 @@ func dputCheck(changesPath string, withoutLintian bool) {
 		dputOpts = "-ol"
 	}
 	args := []string{dputOpts, changesPath}
-	rnr.runCommand(command, args...)
+	if msg, err := rnr.runCommand(command, args...); err != nil {
+		log.Println(msg)
+		return err
+	}
+	return nil
 }
 
 func (c *config) dput(changesPath string, passphrase string, withoutLintian bool) {

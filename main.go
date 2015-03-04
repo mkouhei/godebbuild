@@ -132,7 +132,9 @@ func main() {
 	cfg.changeOwner()
 	debsign(changesPath, pass["passphrase"])
 	if *b == true {
-		dputCheck(changesPath, *w)
+		if err := dputCheck(changesPath, *w); err != nil {
+			log.Println(err)
+		}
 	} else {
 		cfg.dput(changesPath, pass["rPassphrase"], *w)
 	}

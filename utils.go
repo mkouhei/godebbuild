@@ -12,11 +12,11 @@ import (
 )
 
 type runner interface {
-	runCommand(string, ...string) error
+	runCommand(string, ...string) (string, error)
 }
 type realRunner struct{}
 
-func (r realRunner) runCommand(command string, args ...string) error {
+func (r realRunner) runCommand(command string, args ...string) (string, error) {
 	cmd := exec.Command(command, args...)
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
@@ -24,9 +24,9 @@ func (r realRunner) runCommand(command string, args ...string) error {
 	cmd.Stderr = &stderr
 	err := cmd.Run()
 	if err != nil {
-		return err
+		return stderr.String(), err
 	}
-	return nil
+	return stdout.String(), nil
 }
 
 func (c *config) cleanDirs() {
@@ -38,14 +38,18 @@ func (c *config) cleanDirs() {
 	}
 }
 
-func (c *config) changeOwner() {
+func (c *config) changeOwner() error {
 	u, err := user.Current()
 	if err != nil {
 		log.Fatal(err)
 	}
 	command := "sudo"
 	args := []string{"chown", "-R", fmt.Sprintf("%s:", u.Username), c.ResultsDirpath}
-	rnr.runCommand(command, args...)
+	if msg, err := rnr.runCommand(command, args...); err != nil {
+		log.Println(msg)
+		return err
+	}
+	return nil
 }
 
 func workDirpath() (string, error) {
