@@ -9,7 +9,7 @@ export GOPATH
 PATH := $(CURDIR)/_build/bin:$(PATH)
 export PATH
 # "FLAGS=" when no update package
-FLAGS := -u
+FLAGS := $(shell test -d $(GOPATH) && echo "-u")
 # "FUNC=-html" when generate HTML coverage report
 FUNC := -func
 
