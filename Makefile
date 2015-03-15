@@ -14,7 +14,7 @@ FLAGS := $(shell test -d $(GOPATH) && echo "-u")
 FUNC := -func
 
 
-all: precheck clean test format build
+all: precheck clean test build
 
 precheck:
 	@if [ -d .git ]; then \
@@ -28,7 +28,6 @@ prebuild:
 	install -d $(CURDIR)/_build/src/$(GOPKG)
 	cp -a $(CURDIR)/*.go $(CURDIR)/examples $(CURDIR)/_build/src/$(GOPKG)
 
-
 build: prebuild
 	go build -ldflags "-X main.version $(shell git describe --always)" -o _build/$(BIN)
 
@@ -37,13 +36,6 @@ build-only:
 
 clean:
 	@rm -rf _build/$(BIN) $(GOPATH)/src/$(GOPKG)
-
-format:
-	for src in $(SRC); do \
-		gofmt -w $$src ;\
-		goimports -w $$src ;\
-	done
-
 
 test: prebuild
 	go get $(FLAGS) golang.org/x/tools/cmd/goimports
@@ -56,3 +48,7 @@ test: prebuild
 	go tool cover $(FUNC)=c.out
 	unlink c.out
 	rm -f main.test
+	for src in $(SRC); do \
+		gofmt -w $$src ;\
+		goimports -w $$src ;\
+	done
