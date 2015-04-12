@@ -1,9 +1,10 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
-BIN := debbuild
+PRJNAME := $(shell basename $(CURDIR))
+BIN := $(PRJNAME)
 SRC := *.go
-GOPKG := github.com/mkouhei/godebbuild/
+GOPKG := github.com/mkouhei/$(PRJNAME)
 GOPATH := $(CURDIR)/_build
 export GOPATH
 PATH := $(CURDIR)/_build/bin:$(PATH)
