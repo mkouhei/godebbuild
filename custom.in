@@ -1,1 +1,1 @@
-PREBUILD_OPTS := $(CURDIR)/examples
+PREBUILD_COPY_OPTS := $(CURDIR)/examples
