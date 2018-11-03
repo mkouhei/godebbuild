@@ -10,3 +10,7 @@ install:
   - go get -d -v ./...
 script:
   - go test -v
+
+matrix:
+  allow_failures:
+    - go: master
